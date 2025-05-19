@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Holdings from './components/Holdings';
 import TaxHarvestingInfo from './components/TaxHarvestingInfo';
-import './index.css'; // Ensure Tailwind styles are imported
+import { useTheme } from './context/ThemeContext';
+import Navbar from './components/Navbar';
+import axios from 'axios';
 
 // Placeholder data based on the image
 const preHarvestingData = {
@@ -16,27 +18,58 @@ const afterHarvestingData = {
   netGains: { short: '-$987', long: '-$2,450' },
 };
 
-const holdingsData = [
-  { name: 'Bitcoin', symbol: 'BTC', holdings: '0.63776 BTC', value: '$55,320.15', icon: 'https://via.placeholder.com/32/FFA500/000000?Text=B', checked: true },
-  { name: 'Ethereum', symbol: 'ETH', holdings: '5.6736 ETH', value: '$55,320.15', icon: 'https://via.placeholder.com/32/808080/FFFFFF?Text=E', checked: false },
-  { name: 'Tether', symbol: 'USDT', holdings: '3096.542 USDT', value: '$55,320.15', icon: 'https://via.placeholder.com/32/26A17B/FFFFFF?Text=T', checked: false },
-  { name: 'Polygon', symbol: 'MATIC', holdings: '2210 MATIC', value: '$55,320.15', icon: 'https://via.placeholder.com/32/8247E5/FFFFFF?Text=P', checked: false },
-  { name: 'Ethereum', symbol: 'ETH', holdings: '5.6736 ETH', value: '$55,320.15', icon: 'https://via.placeholder.com/32/808080/FFFFFF?Text=E', checked: false },
-  { name: 'Tether', symbol: 'USDT', holdings: '3096.542 USDT', value: '$55,320.15', icon: 'https://via.placeholder.com/32/26A17B/FFFFFF?Text=T', checked: false },
-];
-
 const App = () => {
+  const { theme } = useTheme();
+  const [holdings, setHoldings] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Add isLoading state
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+  const fetchData = async () => {
+    setIsLoading(true); // Set loading to true when fetching starts
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/v1/holdings`);
+      const formattedHoldings = response.data.map(item => ({
+        name: item.coinName, // Use coinName for name
+        symbol: item.coin,    // Use coin for symbol
+        holdings: `${item.totalHolding} ${item.coin}`, // Format holdings string
+        value: `$${(item.totalHolding * item.currentPrice).toFixed(2)}`, // Calculate total value
+        icon: item.logo,      // Use logo for icon
+        checked: false,       // Default checked state, adjust as needed
+        averageBuyPrice: item.averageBuyPrice,
+        currentPrice: item.currentPrice,
+        ltcg: item.ltcg,
+        stcg: item.stcg,
+      }));
+      setHoldings(formattedHoldings);
+    } catch (error) {
+      console.error("Error fetching holdings:", error);
+    } finally {
+      setIsLoading(false); // Set loading to false after fetching (success or error)
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto">
-        <TaxHarvestingInfo
-          preHarvesting={preHarvestingData}
-          afterHarvesting={afterHarvestingData}
-          realizedGains="$1,337"
-          effectiveGains="-$2,353"
-          savings="$862"
-        />
-        <Holdings holdings={holdingsData} />
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}>
+      <Navbar />
+      <div className="p-4 md:p-8">
+        {isLoading ? (
+          <p className={`text-center text-lg ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Loading holdings data...</p>
+        ) : (
+          <>
+            <TaxHarvestingInfo
+              preHarvesting={preHarvestingData}
+              afterHarvesting={afterHarvestingData}
+              realizedGains="$1,337"
+              effectiveGains="-$2,353"
+              savings="$862"
+            />
+            <Holdings holdings={holdings} />
+          </>
+        )}
       </div>
     </div>
   );
