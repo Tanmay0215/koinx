@@ -12,8 +12,7 @@ const Navbar = () => {
       <div className="flex items-center">
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors mr-2 md:mr-4"
-          aria-label="Toggle theme"
+          className={`p-2 rounded-full ${theme == "dark" ? 'hover:bg-gray-600' : 'hover:bg-gray-200'} transition-colors mr-2 md:mr-4`}
         >
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>

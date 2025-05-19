@@ -1,6 +1,6 @@
-import React, { useState } from 'react'; // Import useState
+import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
-import { InfoIcon, ChevronDownIcon } from 'lucide-react'; // Added ChevronDownIcon
+import { InfoIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 
 const StatRow = ({ label, shortTerm, longTerm }) => {
     const { theme } = useTheme();
@@ -18,25 +18,24 @@ const StatRow = ({ label, shortTerm, longTerm }) => {
 const TaxHarvestingInfo = ({ preHarvesting, afterHarvesting, realizedGains, effectiveGains, savings }) => {
     const { theme } = useTheme();
     const [showHowItWorksTooltip, setShowHowItWorksTooltip] = useState(false);
-    const [showDisclaimerTooltip, setShowDisclaimerTooltip] = useState(false);
+    const [isDisclaimerExpanded, setIsDisclaimerExpanded] = useState(false);
 
     return (
         <div className="font-sans">
-            <div className={`p-4 rounded-lg mb-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50'}`}>
-                <div className="flex items-center justify-between mb-2"> {/* Changed to justify-between */}
+            <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
                     <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-700'}`}>Tax Harvesting</h2>
                     <div
-                        className="relative" // Added relative positioning for tooltip
+                        className="relative"
                         onMouseEnter={() => setShowHowItWorksTooltip(true)}
                         onMouseLeave={() => setShowHowItWorksTooltip(false)}
                     >
-                        <a href="#" className={`text-sm ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'} underline`}>How it works?</a>
+                        <p className={`text-sm cursor-pointer ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'} underline`}>How it works?</p>
                         {showHowItWorksTooltip && (
                             <div
                                 className={`absolute z-10 w-64 p-3 text-sm ${theme === 'dark' ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-700'} rounded-md shadow-lg right-0 mt-2`}
-                                style={{ top: '100%' }} // Position below the link
                             >
-                                <div className={`absolute w-3 h-3 ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} transform rotate-45 -top-1.5 right-3`}></div> {/* Arrow */}
+                                <div className={`absolute w-3 h-3 ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} transform rotate-45 -top-1.5 right-3`}></div>
                                 Lorem ipsum dolor sit amet consectetur. Euismod id posuere nibh semper mattis scelerisque tellus. Vel mattis diam duis morbi tellus dui consectetur.
                                 <a href="#" className={`font-semibold ${theme === 'dark' ? 'text-blue-300' : 'text-blue-500'} hover:underline`}>Know More</a>
                             </div>
@@ -44,26 +43,26 @@ const TaxHarvestingInfo = ({ preHarvesting, afterHarvesting, realizedGains, effe
                     </div>
                 </div>
                 <div
-                    className={`relative flex items-center justify-between text-sm p-3 rounded-md ${theme === 'dark' ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-blue-100 text-gray-600 border-blue-200'} border cursor-pointer`}
-                    onMouseEnter={() => setShowDisclaimerTooltip(true)}
-                    onMouseLeave={() => setShowDisclaimerTooltip(false)}
+                    className={`flex items-center justify-between text-sm p-3 rounded-md ${theme === 'dark' ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-blue-100 text-gray-600 border-blue-200'} border cursor-pointer mb-2`}
+                    onClick={() => setIsDisclaimerExpanded(!isDisclaimerExpanded)}
                 >
                     <div className="flex items-center gap-1">
                         <InfoIcon size={18} />
                         <p>Important Notes & Disclaimers</p>
                     </div>
-                    <ChevronDownIcon size={18} /> {/* Added ChevronDownIcon */}
-                    {showDisclaimerTooltip && (
-                        <div
-                            className={`absolute z-10 w-full sm:w-80 p-3 text-sm ${theme === 'dark' ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-700'} rounded-md shadow-lg left-0 mt-2`}
-                            style={{ top: '100%' }} // Position below the disclaimer bar
-                        >
-                            <div className={`absolute w-3 h-3 ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'} transform rotate-45 -top-1.5 left-6`}></div> {/* Arrow */}
-                            This is a disclaimer. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Velit laoreet id donec ultrices.
-                            <a href="#" className={`font-semibold ${theme === 'dark' ? 'text-blue-300' : 'text-blue-500'} hover:underline`}>Learn More</a>
-                        </div>
-                    )}
+                    {isDisclaimerExpanded ? <ChevronUpIcon size={18} /> : <ChevronDownIcon size={18} />}
                 </div>
+                {isDisclaimerExpanded && (
+                    <div className={`p-4 rounded-b-lg text-sm ${theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-blue-100 text-gray-700'}`}>
+                        <ul className="list-disc list-inside space-y-2">
+                            <li>Tax-loss harvesting is currently not allowed under Indian tax regulations. Please consult your tax advisor before making any decisions.</li>
+                            <li>Tax harvesting does not apply to derivatives or futures. These are handled separately as business income under tax rules.</li>
+                            <li>Price and market value data is fetched from Coingecko, not from individual exchanges. As a result, values may slightly differ from the ones on your exchange.</li>
+                            <li>Some countries do not have a short-term / long-term bifurcation. For now, we are calculating everything as long-term.</li>
+                            <li>Only realized losses are considered for harvesting. Unrealized losses in held assets are not counted.</li>
+                        </ul>
+                    </div>
+                )}
             </div>
 
             <div className='flex flex-col md:flex-row md:space-x-4'>
@@ -86,7 +85,7 @@ const TaxHarvestingInfo = ({ preHarvesting, afterHarvesting, realizedGains, effe
                     </div>
                 </div>
 
-                <div className={`w-full text-white shadow rounded-lg p-6 ${theme === 'dark' ? 'bg-blue-700' : 'bg-blue-600'}`}>
+                <div className={`w-full text-white shadow rounded-lg p-6 ${theme === 'dark' ? 'bg-gradient-to-r from-blue-700 to-blue-900' : 'bg-gradient-to-r from-blue-600 to-blue-800'}`}>
                     <h3 className="text-md font-semibold mb-3">After Harvesting</h3>
                     <div className="flex justify-between text-sm opacity-80 mb-2">
                         <p></p>
@@ -103,7 +102,7 @@ const TaxHarvestingInfo = ({ preHarvesting, afterHarvesting, realizedGains, effe
                         <p>Effective Capital Gains:</p>
                         <p>{effectiveGains}</p>
                     </div>
-                    <div className={`mt-4 p-3 rounded-md flex items-center justify-center ${theme === 'dark' ? 'bg-yellow-500 text-yellow-900' : 'bg-yellow-400 text-yellow-800'}`}>
+                    <div className={`mt-4 p-3 rounded-md flex items-center justify-center`}>
                         <span className="mr-2">🎉</span>
                         <p className="font-semibold">You are going to save upto {savings}</p>
                     </div>

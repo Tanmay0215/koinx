@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import Holdings from './components/Holdings';
+import React, { useEffect, useState, useCallback } from 'react'; // Import useCallback
+import HoldingsTable from './components/Holdings'; // New import for the table component
 import TaxHarvestingInfo from './components/TaxHarvestingInfo';
 import { useTheme } from './context/ThemeContext';
 import Navbar from './components/Navbar';
@@ -21,36 +21,39 @@ const afterHarvestingData = {
 const App = () => {
   const { theme } = useTheme();
   const [holdings, setHoldings] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Add isLoading state
+  const [isLoading, setIsLoading] = useState(true);
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-  const fetchData = async () => {
-    setIsLoading(true); // Set loading to true when fetching starts
+  // Wrap fetchData in useCallback
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(`${BACKEND_URL}/api/v1/holdings`);
-      const formattedHoldings = response.data.map(item => ({
-        name: item.coinName, // Use coinName for name
-        symbol: item.coin,    // Use coin for symbol
-        holdings: `${item.totalHolding} ${item.coin}`, // Format holdings string
-        value: `$${(item.totalHolding * item.currentPrice).toFixed(2)}`, // Calculate total value
-        icon: item.logo,      // Use logo for icon
-        checked: false,       // Default checked state, adjust as needed
-        averageBuyPrice: item.averageBuyPrice,
-        currentPrice: item.currentPrice,
-        ltcg: item.ltcg,
-        stcg: item.stcg,
+      const formattedHoldings = response.data.map((item, index) => ({
+        id: item.id || `holding-${index}`, // Add a unique id for key prop
+        name: item.coinName,
+        symbol: item.coin,
+        holdings: `${parseFloat(item.totalHolding).toFixed(5)} ${item.coin}`,
+        value: `$${(parseFloat(item.totalHolding) * parseFloat(item.currentPrice)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        icon: item.logo,
+        checked: item.coin === 'ETH', // Example: Select ETH by default as in image
+        averageBuyPrice: parseFloat(item.averageBuyPrice),
+        currentPrice: parseFloat(item.currentPrice),
+        ltcg: parseFloat(item.ltcgAmount) || 0, // Use ltcgAmount and ensure it's a number
+        stcg: parseFloat(item.stcgAmount) || 0, // Use stcgAmount and ensure it's a number
+        totalHolding: parseFloat(item.totalHolding) // Ensure totalHolding is a number for HoldingRow
       }));
       setHoldings(formattedHoldings);
     } catch (error) {
       console.error("Error fetching holdings:", error);
     } finally {
-      setIsLoading(false); // Set loading to false after fetching (success or error)
+      setIsLoading(false);
     }
-  };
+  }, [BACKEND_URL]); // Add BACKEND_URL to dependency array
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]); // Add fetchData to dependency array
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}>
@@ -63,11 +66,12 @@ const App = () => {
             <TaxHarvestingInfo
               preHarvesting={preHarvestingData}
               afterHarvesting={afterHarvestingData}
-              realizedGains="$1,337"
-              effectiveGains="-$2,353"
-              savings="$862"
+              realizedGains="$1,337" // This seems to be static based on previous context
+              effectiveGains="-$2,353" // This seems to be static
+              savings="$862" // This seems to be static
             />
-            <Holdings holdings={holdings} />
+            {/* Replace old Holdings component with HoldingsTable */}
+            <HoldingsTable holdings={holdings} />
           </>
         )}
       </div>
