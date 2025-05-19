@@ -11,8 +11,9 @@ const HoldingsTable = ({ holdings: initialHoldings }) => {
 
     useEffect(() => {
         const mappedHoldings = initialHoldings.map(h => ({ ...h, isSelected: h.checked || false }));
-        setHoldings(mappedHoldings);
-        const allSelected = mappedHoldings.length > 0 && mappedHoldings.every(h => h.isSelected);
+        const sortedHoldings = mappedHoldings.sort((a, b) => b.numericValue - a.numericValue);
+        setHoldings(sortedHoldings);
+        const allSelected = sortedHoldings.length > 0 && sortedHoldings.every(h => h.isSelected);
         setSelectAll(allSelected);
     }, [initialHoldings]);
 
@@ -50,16 +51,16 @@ const HoldingsTable = ({ holdings: initialHoldings }) => {
                                     type="checkbox"
                                     checked={selectAll}
                                     onChange={handleSelectAll}
-                                    disabled={displayedHoldings.length === 0} // Disable if no holdings displayed
+                                    disabled={displayedHoldings.length === 0}
                                     className={`form-checkbox h-5 w-5 ${theme === 'dark' ? 'text-blue-500 bg-gray-600 border-gray-500 focus:ring-blue-500' : 'text-blue-600 border-gray-300 focus:ring-blue-500'} rounded`}
                                 />
                             </th>
-                            <th className={`p-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Asset</th>
-                            <th className={`p-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Holdings</th>
-                            <th className={`p-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Total Current Value</th>
-                            <th className={`p-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Short-term</th>
-                            <th className={`p-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Long-Term</th>
-                            <th className={`p-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Amount to Sell</th>
+                            <th className={`p-3 text-left text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Asset</th>
+                            <th className={`p-3 text-left text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider flex flex-col`}>Holdings<span className='text-xs mt-1'>Current Market Value</span></th>
+                            <th className={`p-3 text-left text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Total Current Value</th>
+                            <th className={`p-3 text-left text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Short-term</th>
+                            <th className={`p-3 text-left text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Long-Term</th>
+                            <th className={`p-3 text-left text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Amount to Sell</th>
                         </tr>
                     </thead>
                     <tbody className={`${theme === 'dark' ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'}`}>

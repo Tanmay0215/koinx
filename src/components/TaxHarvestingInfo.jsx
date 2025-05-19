@@ -2,23 +2,45 @@ import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { InfoIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 
+// Helper function to format currency
+const formatCurrency = (value) => {
+    if (typeof value !== 'number') return '$0.00';
+    return `${value < 0 ? '-' : ''}$${Math.abs(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
 const StatRow = ({ label, shortTerm, longTerm }) => {
     const { theme } = useTheme();
     return (
         <div className="flex justify-between py-1">
             <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>{label}</p>
             <div className="flex w-1/2 justify-between">
-                <p className={`w-1/2 text-right ${theme === 'dark' ? 'text-gray-100' : 'text-black'}`}>{shortTerm}</p>
-                <p className={`w-1/2 text-right ${theme === 'dark' ? 'text-gray-100' : 'text-black'}`}>{longTerm}</p>
+                <p className={`w-1/2 text-right ${theme === 'dark' ? 'text-gray-100' : 'text-black'}`}>{formatCurrency(shortTerm)}</p>
+                <p className={`w-1/2 text-right ${theme === 'dark' ? 'text-gray-100' : 'text-black'}`}>{formatCurrency(longTerm)}</p>
             </div>
         </div>
     );
 }
 
-const TaxHarvestingInfo = ({ preHarvesting, afterHarvesting, realizedGains, effectiveGains, savings }) => {
+const TaxHarvestingInfo = ({ preHarvesting, afterHarvesting }) => {
     const { theme } = useTheme();
     const [showHowItWorksTooltip, setShowHowItWorksTooltip] = useState(false);
     const [isDisclaimerExpanded, setIsDisclaimerExpanded] = useState(false);
+
+    // Calculate realizedGains using raw numbers and then format
+    const rawRealizedGains = (preHarvesting.netGains.short || 0) + (preHarvesting.netGains.long || 0);
+    const formattedRealizedGains = formatCurrency(rawRealizedGains);
+
+    // Calculate Effective Capital Gains
+    const effectiveGains = (afterHarvesting.netGains.short || 0) + (afterHarvesting.netGains.long || 0);
+    const formattedEffectiveGains = formatCurrency(effectiveGains);
+
+    // Calculate Savings
+    // Savings = (Net Capital Gains Before Harvesting) - (Net Capital Gains After Harvesting)
+    // Note: Tax rate is assumed to be 0 for simplicity here, otherwise it would be: (Net Before - Net After) * TaxRate
+    const netBeforeHarvesting = rawRealizedGains;
+    const netAfterHarvesting = effectiveGains;
+    const savings = netBeforeHarvesting - netAfterHarvesting;
+    const formattedSavings = formatCurrency(savings);
 
     return (
         <div className="font-sans">
@@ -81,7 +103,7 @@ const TaxHarvestingInfo = ({ preHarvesting, afterHarvesting, realizedGains, effe
                     <hr className={`my-3 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`} />
                     <div className={`flex justify-between font-semibold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
                         <p>Realised Capital Gains:</p>
-                        <p>{realizedGains}</p>
+                        <p>{formattedRealizedGains}</p>
                     </div>
                 </div>
 
@@ -100,11 +122,11 @@ const TaxHarvestingInfo = ({ preHarvesting, afterHarvesting, realizedGains, effe
                     <hr className={`my-3 ${theme === 'dark' ? 'border-blue-500' : 'border-blue-400'}`} />
                     <div className="flex justify-between font-semibold">
                         <p>Effective Capital Gains:</p>
-                        <p>{effectiveGains}</p>
+                        <p>{formattedEffectiveGains}</p>
                     </div>
                     <div className={`mt-4 p-3 rounded-md flex items-center justify-center`}>
                         <span className="mr-2">🎉</span>
-                        <p className="font-semibold">You are going to save upto {savings}</p>
+                        <p className="font-semibold">You are going to save upto {formattedSavings}</p>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from '../assets/logo.png';
-import { MenuIcon, Sun, Moon } from 'lucide-react'; // Import Sun and Moon icons
+import { MenuIcon, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {

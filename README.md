@@ -1,12 +1,85 @@
-# React + Vite
+\
+# KoinX Assignment Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a frontend application built with React and Vite. It displays cryptocurrency holdings and tax harvesting information.
 
-Currently, two official plugins are available:
+## Deployed Link
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+You can access the deployed application here: [https://koinx-sooty-ten.vercel.app/](https://koinx-sooty-ten.vercel.app/)
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Display Cryptocurrency Holdings:** View a list of your cryptocurrency assets, including their current value and individual holdings.
+- **Tax Harvesting Information:** Access details on short-term and long-term capital gains, both before and after potential tax harvesting.
+- **Dark Mode:** Switch between light and dark themes for comfortable viewing in different lighting conditions.
+- **Loading States:** Clear visual indicators when data is being fetched from the backend.
+- **Error Handling:** Informative messages if data fetching fails.
+- **Responsive Design:** The application is designed to work seamlessly across various screen sizes.
+
+## Folder Structure
+
+```
+koinx/
+├── public/
+│   └── vite.svg
+├── src/
+│   ├── assets/
+│   │   └── logo.png
+│   ├── components/
+│   │   ├── HoldingRow.jsx
+│   │   ├── Holdings.jsx
+│   │   ├── Navbar.jsx
+│   │   └── TaxHarvestingInfo.jsx
+│   ├── context/
+│   │   └── ThemeContext.jsx
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+├── .eslintrc.cjs
+├── .gitignore
+├── index.html
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── README.md
+├── tailwind.config.js
+└── vite.config.js
+```
+
+## Setup Instructions
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Tanmay0215/koinx
+    cd koinx
+    ```
+
+2.  **Install dependencies:**
+    Make sure you have Node.js and npm (or yarn) installed.
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
+
+3.  **Set up environment variables:**
+    Create a `.env` file in the root of the project and add your backend URL:
+    ```env
+    VITE_BACKEND_URL=https://koinx-backend-8cya.onrender.com
+    ```
+
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    ```
+    This will start the Vite development server, typically at `http://localhost:5173`.
+
+5.  **Build for production:**
+    ```bash
+    npm run build
+    # or
+    yarn build
+    ```
+    This command will create a `dist` folder with the production-ready static assets.
